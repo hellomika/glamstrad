@@ -1,32 +1,32 @@
+import glamstrad/basic/function.{type Function}
+
 pub type Statement {
   Statement(Command, Expression)
 }
 
-pub type Command {
-  PRINT
-  CLS
-}
-
 pub type Expression {
-  // Call(Function, Expression)
+  Call(Function, List(Expression))
   Literal(Literal)
 }
 
-// pub type Function {
-// }
-
 pub type Literal {
-  StringLiteral(String)
-  RealLiteral(Float)
   IntLiteral(Int)
-  NoArg
+  RealLiteral(Float)
+  StringLiteral(String)
+  Nothing
 }
 
 pub type Error {
+  SyntaxError
   InputError
   LexError
   ParseError
   ImproperArgument
   Overflow
   OverflowWith(Literal)
+}
+
+pub type Command {
+  CLS
+  PRINT
 }

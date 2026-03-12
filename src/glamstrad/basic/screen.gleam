@@ -1,6 +1,6 @@
 import glamstrad/ansi
 import glamstrad/basic/types.{
-  type Literal, IntLiteral, NoArg, RealLiteral, StringLiteral,
+  type Literal, IntLiteral, Nothing, RealLiteral, StringLiteral,
 }
 import gleam/float
 import gleam/int
@@ -54,6 +54,6 @@ fn to_string(literal: Literal) -> String {
     StringLiteral(str) -> str
     RealLiteral(float) -> float.to_string(float)
     IntLiteral(int) -> int.to_string(int)
-    NoArg -> ""
+    Nothing -> ""
   }
 }

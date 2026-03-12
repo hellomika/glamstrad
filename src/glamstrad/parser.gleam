@@ -1,32 +1,23 @@
-import glamstrad/basic/types.{
-  IntLiteral, Literal, NoArg, RealLiteral, Statement, StringLiteral,
-}
+import glamstrad/basic/types.{Call, Literal, Nothing, Statement}
 
 import glamstrad/lexer
 import gleam/option.{None, Some}
 import nibble
 
 pub fn run(tokens) {
-  nibble.run(tokens, nibble.one_of(parsers()))
+  nibble.run(tokens, statements())
 }
 
-fn parsers() {
-  [
-    print(),
-    commands(),
-  ]
-}
-
-fn print() {
-  use _ <- nibble.do(nibble.token(lexer.Print))
+fn statements() {
+  use command <- nibble.do(command())
   use expression <- nibble.do(expression())
-  nibble.return(Statement(types.PRINT, expression))
+  nibble.return(Statement(command, expression))
 }
 
-fn commands() {
+fn command() {
   nibble.take_map("expected command", fn(token) {
     case token {
-      lexer.Command("CLS") -> Some(Statement(types.CLS, Literal(NoArg)))
+      lexer.Command(command) -> Some(command)
       _ -> None
     }
   })
@@ -34,14 +25,44 @@ fn commands() {
 
 fn expression() {
   nibble.one_of([
-    nibble.take_map("expected expression", fn(token) {
-      case token {
-        lexer.StringLiteral(str) -> Some(Literal(StringLiteral(str)))
-        lexer.RealLiteral(float) -> Some(Literal(RealLiteral(float)))
-        lexer.IntLiteral(int) -> Some(Literal(IntLiteral(int)))
-        _ -> None
-      }
-    }),
-    nibble.return(Literal(NoArg)),
+    literal(),
+    call(),
+    nibble.return(Literal(Nothing)),
   ])
+}
+
+fn literal() {
+  nibble.take_map("expected expression", fn(token) {
+    case token {
+      lexer.Literal(literal) -> Some(Literal(literal))
+      _ -> None
+    }
+  })
+}
+
+fn call() {
+  use function <- nibble.do(function())
+  use _ <- nibble.do(nibble.token(lexer.LParen))
+  use arguments <- nibble.do(arguments())
+  use _ <- nibble.do(nibble.token(lexer.RParen))
+  nibble.return(Call(function, arguments))
+}
+
+fn function() {
+  nibble.take_map("expected function", fn(token) {
+    case token {
+      lexer.Function(function) -> Some(function)
+      _ -> None
+    }
+  })
+}
+
+fn arguments() {
+  nibble.sequence(
+    nibble.one_of([
+      literal(),
+      call(),
+    ]),
+    nibble.token(lexer.Comma),
+  )
 }
