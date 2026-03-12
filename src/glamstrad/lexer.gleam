@@ -1,4 +1,5 @@
 import gleam/list
+import gleam/string
 import nibble/lexer
 
 pub type Token {
@@ -25,8 +26,17 @@ fn lexer() {
 
 fn commands() {
   [
-    lexer.token("PRINT", Print),
+    command_token("PRINT", Print),
     lexer.token("?", Print),
-    lexer.token("CLS", Cls),
+    command_token("CLS", Cls),
   ]
+}
+
+fn command_token(command: String, token: Token) {
+  lexer.keep(fn(lexeme, _lookahead) {
+    case string.uppercase(lexeme) == command {
+      True -> Ok(token)
+      False -> Error(Nil)
+    }
+  })
 }
