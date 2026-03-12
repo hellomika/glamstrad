@@ -1,7 +1,9 @@
+import gleam/list
 import nibble/lexer
 
 pub type Token {
   Print
+  Cls
   StringLiteral(String)
 }
 
@@ -10,10 +12,21 @@ pub fn run(input: String) {
 }
 
 fn lexer() {
-  lexer.simple([
+  lexer.simple(
+    list.flatten([
+      commands(),
+      [
+        lexer.string("\"", StringLiteral),
+        lexer.whitespace(Nil) |> lexer.ignore(),
+      ],
+    ]),
+  )
+}
+
+fn commands() {
+  [
     lexer.token("PRINT", Print),
     lexer.token("?", Print),
-    lexer.string("\"", StringLiteral),
-    lexer.whitespace(Nil) |> lexer.ignore(),
-  ])
+    lexer.token("CLS", Cls),
+  ]
 }

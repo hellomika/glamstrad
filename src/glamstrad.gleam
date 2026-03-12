@@ -1,6 +1,6 @@
 import glamstrad/ansi
 import glamstrad/lexer
-import glamstrad/parser.{PrintStatement}
+import glamstrad/parser.{ClsStatement, PrintStatement}
 import gleam/io
 import gleam/result
 import gleam/string
@@ -29,9 +29,13 @@ fn init() {
   ansi.bg(18)
   ansi.text(227)
   ansi.bold()
+  clear_screen()
+  io.println(intro)
+}
+
+fn clear_screen() {
   ansi.clear()
   ansi.home()
-  io.println(intro)
 }
 
 fn repl() {
@@ -71,5 +75,6 @@ fn parse(tokens) {
 fn eval(command) {
   case command {
     PrintStatement(str) -> str |> io.println() |> Ok()
+    ClsStatement -> clear_screen() |> Ok()
   }
 }
