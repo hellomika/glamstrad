@@ -1,9 +1,18 @@
+import glamstrad/ansi
 import glamstrad/lexer
 import glamstrad/parser.{PrintStatement}
 import gleam/io
 import gleam/result
 import gleam/string
 import in
+
+const intro = "\n"
+  <> " Amstrad 128K Microcomputer (v3)\n"
+  <> "\n"
+  <> " ©1985 Amstrad Consumer Electronics plc\n"
+  <> "           and Locomotive Software Ltd.\n"
+  <> "\n"
+  <> " BASIC 1.1\n"
 
 pub type Error {
   InputError
@@ -12,7 +21,17 @@ pub type Error {
 }
 
 pub fn main() {
+  init()
   repl()
+}
+
+fn init() {
+  ansi.bg(18)
+  ansi.text(227)
+  ansi.bold()
+  ansi.clear()
+  ansi.home()
+  io.println(intro)
 }
 
 fn repl() {
