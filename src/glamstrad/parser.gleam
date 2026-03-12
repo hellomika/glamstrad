@@ -1,4 +1,4 @@
-import glamstrad/lexer.{Cls, Print, StringLiteral}
+import glamstrad/lexer
 import gleam/option.{None, Some}
 import nibble
 
@@ -19,20 +19,20 @@ fn parsers() {
 }
 
 fn print() {
-  use _ <- nibble.do(nibble.token(Print))
+  use _ <- nibble.do(nibble.token(lexer.Print))
   use str <- nibble.do(string_literal())
   nibble.return(PrintStatement(str))
 }
 
 fn cls() {
-  use _ <- nibble.do(nibble.token(Cls))
+  use _ <- nibble.do(nibble.token(lexer.Cls))
   nibble.return(ClsStatement)
 }
 
 fn string_literal() {
   nibble.take_map("expected string", fn(token) {
     case token {
-      StringLiteral(str) -> Some(str)
+      lexer.StringLiteral(str) -> Some(str)
       _ -> None
     }
   })
