@@ -12,6 +12,7 @@ pub fn run(input: String) {
 fn lexer() {
   lexer.simple([
     lexer.token("PRINT", Print),
+    lexer.token("?", Print),
     lexer.string("\"", StringLiteral),
     lexer.whitespace(Nil) |> lexer.ignore(),
   ])
