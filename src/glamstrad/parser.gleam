@@ -1,11 +1,10 @@
+import glamstrad/basic/types.{
+  IntLiteral, Literal, NoArg, RealLiteral, Statement, StringLiteral,
+}
+
 import glamstrad/lexer
 import gleam/option.{None, Some}
 import nibble
-
-pub type Statement {
-  PrintStatement(value: String)
-  ClsStatement
-}
 
 pub fn run(tokens) {
   nibble.run(tokens, nibble.one_of(parsers()))
@@ -14,26 +13,35 @@ pub fn run(tokens) {
 fn parsers() {
   [
     print(),
-    cls(),
+    commands(),
   ]
 }
 
 fn print() {
   use _ <- nibble.do(nibble.token(lexer.Print))
-  use str <- nibble.do(string_literal())
-  nibble.return(PrintStatement(str))
+  use expression <- nibble.do(expression())
+  nibble.return(Statement(types.PRINT, expression))
 }
 
-fn cls() {
-  use _ <- nibble.do(nibble.token(lexer.Cls))
-  nibble.return(ClsStatement)
-}
-
-fn string_literal() {
-  nibble.take_map("expected string", fn(token) {
+fn commands() {
+  nibble.take_map("expected command", fn(token) {
     case token {
-      lexer.StringLiteral(str) -> Some(str)
+      lexer.Command("CLS") -> Some(Statement(types.CLS, Literal(NoArg)))
       _ -> None
     }
   })
+}
+
+fn expression() {
+  nibble.one_of([
+    nibble.take_map("expected expression", fn(token) {
+      case token {
+        lexer.StringLiteral(str) -> Some(Literal(StringLiteral(str)))
+        lexer.RealLiteral(float) -> Some(Literal(RealLiteral(float)))
+        lexer.IntLiteral(int) -> Some(Literal(IntLiteral(int)))
+        _ -> None
+      }
+    }),
+    nibble.return(Literal(NoArg)),
+  ])
 }

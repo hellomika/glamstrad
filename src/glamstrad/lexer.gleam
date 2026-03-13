@@ -1,42 +1,62 @@
 import gleam/list
 import gleam/string
-import nibble/lexer
+import nibble/lexer.{type Error as NibbleError, type Token as NibbleToken} as nibble_lexer
 
-pub type Token {
+pub type BasicToken {
   Print
-  Cls
+  Command(String)
+  Function(String)
   StringLiteral(String)
+  RealLiteral(Float)
+  IntLiteral(Int)
 }
 
-pub fn run(input: String) {
-  lexer.run(input, lexer())
+pub fn run(input: String) -> Result(List(NibbleToken(BasicToken)), NibbleError) {
+  nibble_lexer.run(input, lexer())
 }
 
 fn lexer() {
-  lexer.simple(
+  nibble_lexer.simple(
     list.flatten([
+      print_tokens(),
       commands(),
+      literals(),
       [
-        lexer.string("\"", StringLiteral),
-        lexer.whitespace(Nil) |> lexer.ignore(),
+        nibble_lexer.whitespace(Nil) |> nibble_lexer.ignore(),
       ],
     ]),
   )
 }
 
-fn commands() {
+fn print_tokens() {
   [
-    command_token("PRINT", Print),
-    lexer.token("?", Print),
-    command_token("CLS", Cls),
+    token("PRINT", Print),
+    nibble_lexer.token("?", Print),
   ]
 }
 
-fn command_token(command: String, token: Token) {
-  lexer.keep(fn(lexeme, _lookahead) {
-    case string.uppercase(lexeme) == command {
+fn commands() {
+  [
+    command_token("CLS"),
+  ]
+}
+
+fn command_token(command: String) {
+  token(command, Command(command))
+}
+
+fn token(function: String, token: BasicToken) {
+  nibble_lexer.keep(fn(lexeme, _lookahead) {
+    case string.uppercase(lexeme) == function {
       True -> Ok(token)
       False -> Error(Nil)
     }
   })
+}
+
+fn literals() {
+  [
+    nibble_lexer.string("\"", StringLiteral),
+    nibble_lexer.number(IntLiteral, RealLiteral),
+  ]
 }

@@ -1,20 +1,15 @@
 import glamstrad/basic/screen
+import glamstrad/basic/types
 import glamstrad/lexer
 import glamstrad/parser
 import gleam/result
 import gleam/string
 
-pub type Error {
-  InputError
-  LexError
-  ParseError
-}
-
-pub fn init() {
+pub fn init() -> Nil {
   screen.init()
 }
 
-pub fn run() {
+pub fn run() -> Nil {
   case interpret() {
     Error(_) -> screen.syntax_error()
     _ -> Nil
@@ -24,31 +19,34 @@ pub fn run() {
 fn interpret() {
   use input <- result.try(prompt())
   use tokens <- result.try(lex(input))
-  use command <- result.try(parse(tokens))
-  eval(command)
+  use statement <- result.try(parse(tokens))
+  eval(statement)
 }
 
 fn prompt() {
   screen.prompt()
-  |> result.map_error(fn(_) { InputError })
+  |> result.map_error(fn(_) { types.InputError })
 }
 
 fn lex(input) {
   input
   |> string.trim()
   |> lexer.run()
-  |> result.map_error(fn(_) { LexError })
+  |> result.map_error(fn(_) { types.LexError })
 }
 
 fn parse(tokens) {
   tokens
   |> parser.run()
-  |> result.map_error(fn(_) { ParseError })
+  |> result.map_error(fn(_) { types.ParseError })
 }
 
-fn eval(command) {
-  case command {
-    parser.PrintStatement(str) -> screen.print(str)
-    parser.ClsStatement -> screen.cls()
+fn eval(statement) {
+  case statement {
+    types.Statement(types.PRINT, types.Literal(literal)) ->
+      screen.print(literal)
+
+    types.Statement(types.CLS, types.Literal(types.NoArg)) -> screen.cls()
+    _ -> Ok(Nil)
   }
 }
