@@ -118,20 +118,12 @@ pub fn round(lits: List(Literal)) -> Result(Literal, Error) {
 fn do_round(n_lit: Literal, p_lit: Literal) -> Result(Literal, Error) {
   use n_num <- result.try(to_number(n_lit))
   use p_num <- result.try(to_number(p_lit))
-  let precision = to_int(p_num)
-  case n_num {
-    Real(n) if precision >= 0 ->
-      n
-      |> float.to_precision(precision)
-      |> float.truncate()
-      |> IntLiteral()
-      |> Ok()
-    Real(n) ->
-      n
-      |> float.to_precision(precision)
-      |> RealLiteral()
-      |> Ok()
-    Int(n) -> n |> IntLiteral() |> Ok()
+  let p = to_int(p_num)
+  let r = n_num |> to_float() |> maths.round_to_nearest(p)
+
+  case p {
+    _ if p > 0 -> r |> RealLiteral() |> Ok()
+    _ -> r |> float.truncate() |> IntLiteral() |> Ok()
   }
 }
 
