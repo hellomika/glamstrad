@@ -1,5 +1,6 @@
 import glamstrad/basic/math
 import glamstrad/basic/screen
+import glamstrad/basic/string as basic_string
 import glamstrad/basic/types
 import glamstrad/lexer
 import glamstrad/parser
@@ -70,5 +71,6 @@ fn execute(command, literal) {
 fn call(function, literals) {
   case function {
     types.MathFunction(function) -> math.call(function, literals)
+    types.StringFunction(function) -> basic_string.call(function, literals)
   }
 }

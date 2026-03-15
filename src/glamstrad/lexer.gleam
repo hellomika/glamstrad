@@ -1,4 +1,4 @@
-import glamstrad/basic/types.{MathFunction}
+import glamstrad/basic/types.{MathFunction as Mfn, StringFunction as Sfn}
 import gleam/list
 import gleam/string
 import nibble/lexer
@@ -19,6 +19,7 @@ pub fn run(input: String) -> Result(List(lexer.Token(BasicToken)), lexer.Error) 
       list.flatten([
         commands(),
         math_functions(),
+        string_functions(),
         literals(),
         symbols(),
       ]),
@@ -40,20 +41,28 @@ fn command_token(command_name: String, command_type: types.Command) {
 
 fn math_functions() {
   [
-    function_token("ABS", MathFunction(types.ABS)),
-    function_token("ATN", MathFunction(types.ATN)),
-    function_token("CINT", MathFunction(types.CINT)),
-    function_token("COS", MathFunction(types.COS)),
-    function_token("EXP", MathFunction(types.EXP)),
-    function_token("FIX", MathFunction(types.FIX)),
-    function_token("INT", MathFunction(types.INT)),
-    function_token("LOG10", MathFunction(types.LOG10)),
-    function_token("LOG", MathFunction(types.LOG)),
-    function_token("ROUND", MathFunction(types.ROUND)),
-    function_token("SGN", MathFunction(types.SGN)),
-    function_token("SIN", MathFunction(types.SIN)),
-    function_token("SQR", MathFunction(types.SQR)),
-    function_token("TAN", MathFunction(types.TAN)),
+    function_token("ABS", Mfn(types.ABS)),
+    function_token("ATN", Mfn(types.ATN)),
+    function_token("CINT", Mfn(types.CINT)),
+    function_token("COS", Mfn(types.COS)),
+    function_token("EXP", Mfn(types.EXP)),
+    function_token("FIX", Mfn(types.FIX)),
+    function_token("INT", Mfn(types.INT)),
+    function_token("LOG10", Mfn(types.LOG10)),
+    function_token("LOG", Mfn(types.LOG)),
+    function_token("ROUND", Mfn(types.ROUND)),
+    function_token("SGN", Mfn(types.SGN)),
+    function_token("SIN", Mfn(types.SIN)),
+    function_token("SQR", Mfn(types.SQR)),
+    function_token("TAN", Mfn(types.TAN)),
+  ]
+}
+
+fn string_functions() {
+  [
+    function_token("BIN$", Sfn(types.BIN)),
+    function_token("HEX$", Sfn(types.HEX)),
+    function_token("STR$", Sfn(types.STR)),
   ]
 }
 

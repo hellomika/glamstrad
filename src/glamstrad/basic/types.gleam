@@ -9,6 +9,7 @@ pub type Expression {
 
 pub type Function {
   MathFunction(MathFunction)
+  StringFunction(StringFunction)
 }
 
 pub type Literal {
@@ -18,12 +19,18 @@ pub type Literal {
   Nothing
 }
 
+pub type Number {
+  IntNumber(Int)
+  RealNumber(Float)
+}
+
 pub type Error {
   SyntaxError
   InputError
   LexError
   ParseError
   ImproperArgument
+  TypeMismatch
   Overflow
   OverflowWith(Literal)
 }
@@ -48,4 +55,10 @@ pub type MathFunction {
   SIN
   SQR
   TAN
+}
+
+pub type StringFunction {
+  BIN
+  HEX
+  STR
 }
