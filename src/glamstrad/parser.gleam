@@ -1,5 +1,4 @@
 import glamstrad/basic/types.{Call, Literal, Nothing, Statement}
-
 import glamstrad/lexer
 import gleam/option.{None, Some}
 import nibble

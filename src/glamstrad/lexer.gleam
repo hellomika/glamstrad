@@ -1,12 +1,11 @@
-import glamstrad/basic/function.{type Function}
-import glamstrad/basic/types
+import glamstrad/basic/types.{MathFunction}
 import gleam/list
 import gleam/string
 import nibble/lexer
 
 pub type BasicToken {
   Command(types.Command)
-  Function(Function)
+  Function(types.Function)
   Literal(types.Literal)
   LParen
   RParen
@@ -41,24 +40,24 @@ fn command_token(command_name: String, command_type: types.Command) {
 
 fn math_functions() {
   [
-    function_token("ABS", function.ABS),
-    function_token("ATN", function.ATN),
-    function_token("CINT", function.CINT),
-    function_token("COS", function.COS),
-    function_token("EXP", function.EXP),
-    function_token("FIX", function.FIX),
-    function_token("INT", function.INT),
-    function_token("LOG10", function.LOG10),
-    function_token("LOG", function.LOG),
-    function_token("ROUND", function.ROUND),
-    function_token("SGN", function.SGN),
-    function_token("SIN", function.SIN),
-    function_token("SQR", function.SQR),
-    function_token("TAN", function.TAN),
+    function_token("ABS", MathFunction(types.ABS)),
+    function_token("ATN", MathFunction(types.ATN)),
+    function_token("CINT", MathFunction(types.CINT)),
+    function_token("COS", MathFunction(types.COS)),
+    function_token("EXP", MathFunction(types.EXP)),
+    function_token("FIX", MathFunction(types.FIX)),
+    function_token("INT", MathFunction(types.INT)),
+    function_token("LOG10", MathFunction(types.LOG10)),
+    function_token("LOG", MathFunction(types.LOG)),
+    function_token("ROUND", MathFunction(types.ROUND)),
+    function_token("SGN", MathFunction(types.SGN)),
+    function_token("SIN", MathFunction(types.SIN)),
+    function_token("SQR", MathFunction(types.SQR)),
+    function_token("TAN", MathFunction(types.TAN)),
   ]
 }
 
-fn function_token(function_name: String, function_type: Function) {
+fn function_token(function_name: String, function_type: types.Function) {
   token(function_name, Function(function_type))
 }
 

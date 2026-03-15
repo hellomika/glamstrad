@@ -18,7 +18,29 @@ const max_exp = 89.0
 
 const max_trig: Float = 205_884.27455
 
-pub fn abs(lits: List(Literal)) -> Result(Literal, Error) {
+pub fn call(
+  function: types.MathFunction,
+  literals: List(Literal),
+) -> Result(Literal, Error) {
+  case function {
+    types.ABS -> abs(literals)
+    types.ATN -> atn(literals)
+    types.CINT -> cint(literals)
+    types.COS -> cos(literals)
+    types.EXP -> exp(literals)
+    types.FIX -> fix(literals)
+    types.INT -> int(literals)
+    types.LOG10 -> log10(literals)
+    types.LOG -> log(literals)
+    types.ROUND -> round(literals)
+    types.SGN -> sgn(literals)
+    types.SIN -> sin(literals)
+    types.SQR -> sqr(literals)
+    types.TAN -> tan(literals)
+  }
+}
+
+fn abs(lits: List(Literal)) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   case num {
@@ -35,7 +57,7 @@ pub fn abs(lits: List(Literal)) -> Result(Literal, Error) {
   }
 }
 
-pub fn atn(lits: List(Literal)) -> Result(Literal, Error) {
+fn atn(lits: List(Literal)) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   num
@@ -43,7 +65,7 @@ pub fn atn(lits: List(Literal)) -> Result(Literal, Error) {
   |> float_op(maths.atan)
 }
 
-pub fn cint(lits: List(Literal)) -> Result(Literal, Error) {
+fn cint(lits: List(Literal)) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   case num {
@@ -52,7 +74,7 @@ pub fn cint(lits: List(Literal)) -> Result(Literal, Error) {
   }
 }
 
-pub fn cos(lits: List(Literal)) -> Result(Literal, Error) {
+fn cos(lits: List(Literal)) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   num
@@ -60,7 +82,7 @@ pub fn cos(lits: List(Literal)) -> Result(Literal, Error) {
   |> trig_op(maths.cos)
 }
 
-pub fn exp(lits: List(Literal)) -> Result(Literal, Error) {
+fn exp(lits: List(Literal)) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   case to_float(num) {
@@ -69,7 +91,7 @@ pub fn exp(lits: List(Literal)) -> Result(Literal, Error) {
   }
 }
 
-pub fn fix(lits: List(Literal)) -> Result(Literal, Error) {
+fn fix(lits: List(Literal)) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   case num {
@@ -78,7 +100,7 @@ pub fn fix(lits: List(Literal)) -> Result(Literal, Error) {
   }
 }
 
-pub fn int(lits: List(Literal)) -> Result(Literal, Error) {
+fn int(lits: List(Literal)) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   case num {
@@ -87,27 +109,28 @@ pub fn int(lits: List(Literal)) -> Result(Literal, Error) {
   }
 }
 
-pub fn log(lits: List(Literal)) -> Result(Literal, Error) {
+fn log(lits: List(Literal)) -> Result(Literal, Error) {
+  do_log(lits, maths.natural_logarithm)
+}
+
+fn log10(lits: List(Literal)) -> Result(Literal, Error) {
+  do_log(lits, maths.logarithm_10)
+}
+
+fn do_log(
+  lits: List(Literal),
+  log_fn: fn(Float) -> Result(Float, Nil),
+) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   let n = to_float(num)
-  case maths.natural_logarithm(n) {
+  case log_fn(n) {
     Ok(value) -> Ok(RealLiteral(value))
     Error(Nil) -> Error(OverflowWith(lit))
   }
 }
 
-pub fn log10(lits: List(Literal)) -> Result(Literal, Error) {
-  use lit <- result.try(single_arg(lits))
-  use num <- result.try(to_number(lit))
-  let n = to_float(num)
-  case maths.logarithm_10(n) {
-    Ok(value) -> Ok(RealLiteral(value))
-    Error(Nil) -> Error(OverflowWith(lit))
-  }
-}
-
-pub fn round(lits: List(Literal)) -> Result(Literal, Error) {
+fn round(lits: List(Literal)) -> Result(Literal, Error) {
   case lits {
     [n_lit, p_lit] -> do_round(n_lit, p_lit)
     [n_lit] -> do_round(n_lit, IntLiteral(0))
@@ -127,16 +150,18 @@ fn do_round(n_lit: Literal, p_lit: Literal) -> Result(Literal, Error) {
   }
 }
 
-pub fn sgn(lits: List(Literal)) -> Result(Literal, Error) {
+fn sgn(lits: List(Literal)) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   num
   |> to_float()
-  |> float_op(maths.sign)
-  |> result.try(fn(result) { fix([result]) })
+  |> maths.sign()
+  |> float.truncate()
+  |> IntLiteral()
+  |> Ok()
 }
 
-pub fn sin(lits: List(Literal)) -> Result(Literal, Error) {
+fn sin(lits: List(Literal)) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   num
@@ -144,7 +169,7 @@ pub fn sin(lits: List(Literal)) -> Result(Literal, Error) {
   |> trig_op(maths.sin)
 }
 
-pub fn sqr(lits: List(Literal)) -> Result(Literal, Error) {
+fn sqr(lits: List(Literal)) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   let n = to_float(num)
@@ -154,7 +179,7 @@ pub fn sqr(lits: List(Literal)) -> Result(Literal, Error) {
   }
 }
 
-pub fn tan(lits: List(Literal)) -> Result(Literal, Error) {
+fn tan(lits: List(Literal)) -> Result(Literal, Error) {
   use lit <- result.try(single_arg(lits))
   use num <- result.try(to_number(lit))
   num

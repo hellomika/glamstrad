@@ -1,5 +1,3 @@
-import glamstrad/basic/function.{type Function}
-
 pub type Statement {
   Statement(Command, Expression)
 }
@@ -7,6 +5,10 @@ pub type Statement {
 pub type Expression {
   Call(Function, List(Expression))
   Literal(Literal)
+}
+
+pub type Function {
+  MathFunction(MathFunction)
 }
 
 pub type Literal {
@@ -29,4 +31,21 @@ pub type Error {
 pub type Command {
   CLS
   PRINT
+}
+
+pub type MathFunction {
+  ABS
+  ATN
+  CINT
+  COS
+  EXP
+  FIX
+  INT
+  LOG10
+  LOG
+  ROUND
+  SGN
+  SIN
+  SQR
+  TAN
 }

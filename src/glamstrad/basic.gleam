@@ -1,4 +1,3 @@
-import glamstrad/basic/function
 import glamstrad/basic/math
 import glamstrad/basic/screen
 import glamstrad/basic/types
@@ -68,24 +67,8 @@ fn execute(command, literal) {
   }
 }
 
-fn call(
-  function: function.Function,
-  literals: List(types.Literal),
-) -> Result(types.Literal, types.Error) {
+fn call(function, literals) {
   case function {
-    function.ABS -> math.abs(literals)
-    function.ATN -> math.atn(literals)
-    function.CINT -> math.cint(literals)
-    function.COS -> math.cos(literals)
-    function.EXP -> math.exp(literals)
-    function.FIX -> math.fix(literals)
-    function.INT -> math.int(literals)
-    function.LOG10 -> math.log10(literals)
-    function.LOG -> math.log(literals)
-    function.ROUND -> math.round(literals)
-    function.SGN -> math.sgn(literals)
-    function.SIN -> math.sin(literals)
-    function.SQR -> math.sqr(literals)
-    function.TAN -> math.tan(literals)
+    types.MathFunction(function) -> math.call(function, literals)
   }
 }
